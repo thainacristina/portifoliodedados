@@ -1,1 +1,85 @@
+CREATE DATABASE lumina;
+USE lumina;
 
+-- CRIAR TABELA PRODUTOS
+CREATE TABLE produtos (
+  id_produto INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  nome_produto VARCHAR(100),
+  tipo_produto VARCHAR(50),
+  preco DECIMAL(10, 2), 
+  quantidade INT
+);
+
+-- CRIAR TABELA VENDAS
+CREATE TABLE vendas (
+  id_venda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  id_produto INT,
+  quantidade INT,
+  local_venda VARCHAR(50),
+  data_venda DATE,
+  FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+-- INSERIR PRODUTOS
+INSERT INTO produtos (nome_produto, tipo_produto, preco, quantidade) VALUES
+('Pulseira Essence', 'Pulseira', 299.90, 247),
+('Pingente Coração', 'Pingente', 149.90, 250),
+('Anel Crystal', 'Anel', 199.90, 120),
+('Brinco Estrela', 'Brinco', 99.90, 278),
+('Colar Lumina', 'Colar', 249.90, 345),
+('Pulseira Charm', 'Pulseira', 189.90, 487),
+('Pingente Flora', 'Pingente', 129.90, 500),
+('Anel Solitário', 'Anel', 299.90, 157);
+
+-- INSERIR VENDAS
+INSERT INTO vendas (id_produto, quantidade, local_venda, data_venda) VALUES
+(1, 1, 'SAO PAULO', '2025-10-01'),
+(2, 2, 'RIO DE JANEIRO', '2025-10-01'),
+(3, 3, 'SAO PAULO', '2025-10-02'),
+(4, 4, 'BELO HORIZONTE', '2025-10-03'),
+(5, 5, 'SAO PAULO', '2025-10-04'),
+(6, 6, 'CURITIBA', '2025-10-05'),
+(7, 7, 'RIO DE JANEIRO', '2025-10-06'),
+(8, 8, 'CURITIBA', '2025-10-07');
+
+-- VENDAS POR PRODUTO
+
+SELECT p.nome_produto, sum(v.quantidade) as total_vendido
+FROM vendas v
+JOIN produtos p on v.id_produto = p.id_produto
+GROUP BY p.nome_produto 
+ORDER BY total_vendido DESC;
+
+-- RECEITA TOTAL DE PRODUTO
+SELECT 
+  p.nome_produto, 
+  SUM(v.quantidade * p.preco) AS receita_total
+FROM vendas v
+JOIN produtos p ON v.id_produto = p.id_produto
+GROUP BY p.nome_produto
+ORDER BY receita_total DESC;
+
+-- LOCAL COM MAIS VENDAS
+SELECT Local_venda, sum(quantidade) as total_vendido
+FROM vendas
+GROUP BY local_venda
+ORDER BY total_vendido DESC;
+
+-- PRODUTO MAIS VENDIDO
+SELECT p.tipo_produto, SUM(v.quantidade) AS total_vendido
+FROM Vendas v
+JOIN Produtos p ON v.id_produto = p.id_produto
+GROUP BY p.tipo_produto
+ORDER BY total_vendido DESC;
+
+-- DADOS PARA GRAFICO PIZZA
+SELECT p.tipo_produto, sum(v.quantidade * p.preco) as receita_total
+FROM Vendas v
+JOIN Produtos p ON v.id_produto = p.id_produto
+GROUP BY p.tipo_produto;
+
+-- DADOS PARA GRAFICO DE LINHA 
+SELECT data_venda, sum(quantidade) as total_vendido
+FROM Vendas
+GROUP BY data_venda
+ORDER BY data_venda;
